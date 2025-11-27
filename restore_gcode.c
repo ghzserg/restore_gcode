@@ -499,7 +499,7 @@ int main(int argc, char *argv[]) {
     const char *socker_name = (argc > 2) ? argv[2] : "/tmp/uds";
     const char *dir_name = (argc > 3) ? argv[3] : "/data";
     const char *lang = (argc > 4) ? argv[4] : "en";
-    if (strncmp(lang, "ru", 2)) {
+    if (strncmp(lang, "ru", 2) == 0) {
         en = 0;
     }
 

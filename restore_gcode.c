@@ -253,7 +253,7 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
         else
             snprintf(cmd, sizeof(cmd), "RESPOND PREFIX=\"//\" MSG=\"Устанавливаю офсет. X=%.3f Y=%.3f Z=%.3f\"", x, y, z);
         SEND_CMD(cmd);
-        snprintf(cmd, sizeof(cmd), "SET_GCODE_OFFSET X=%.3f Y=%.3f Z=%.3f", x, y, z);
+        snprintf(cmd, sizeof(cmd), "SET_GCODE_OFFSET X=%.3f Y=%.3f Z=%.3f FROM=RESTORE", x, y, z);
         SEND_CMD(cmd);
     }
 

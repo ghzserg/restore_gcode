@@ -480,6 +480,8 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
         SEND_CMD("SDCARD_ENABLE_FFM ENABLE=1");
         SEND_CMD("SDCARD_SET_CHANNEL CHANNEL=98");
         SEND_CMD("GET_ZCOLOR SILENT=1");
+        SEND_CMD("ZCONTROL_ABORT");
+        SEND_CMD("ZCONTROL_ON");
 
         if (en==1)
             SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Starting print\"");

@@ -214,6 +214,7 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
     else
         SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Двигаемся домой\"");
     SEND_CMD("G28");
+    SEND_CMD("_GOTO_TRASH");
 
     SEND_CMD("SET_HEATER_TEMPERATURE HEATER=extruder TARGET=120");
 
@@ -483,14 +484,49 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
         SEND_CMD("ZCONTROL_ABORT");
         SEND_CMD("ZCONTROL_ON");
 
+        // Ищем и выполняем SET_PRINT_STATS_INFO
+        FILE *print_file = fopen(fpath, "r");
+        if (!print_file) {
+            char full_path[BUFFER_SIZE];
+            snprintf(full_path, sizeof(full_path), "%s/%s", prefix, fpath);
+            print_file = fopen(full_path, "r");
+        }
+
+        if (print_file) {
+            char line[BUFFER_SIZE];
+            while (fgets(line, sizeof(line), print_file)) {
+                // Проверяем, начинается ли строка с "SET_PRINT_STATS_INFO"
+                if (strncmp(line, "SET_PRINT_STATS_INFO", 20) == 0) {
+                    // Удаляем символ новой строки, если он есть
+                    char *newline = strchr(line, '\n');
+                    if (newline) *newline = '\0';
+
+                    // Отправляем команду через Klipper
+                    if (en == 1)
+                        snprintf(cmd, sizeof(cmd), "RESPOND PREFIX=\"//\" MSG=\"Executing SET_PRINT_STATS_INFO command\"");
+                    else
+                        snprintf(cmd, sizeof(cmd), "RESPOND PREFIX=\"//\" MSG=\"Выполняю команду SET_PRINT_STATS_INFO\"");
+                    SEND_CMD(cmd);
+                    SEND_CMD(line);
+                    break;
+                }
+            }
+            fclose(print_file);
+        } else {
+            if (en == 1)
+                snprintf(cmd, sizeof(cmd), "RESPOND PREFIX=\"//\" MSG=\"Could not open print file to find SET_PRINT_STATS_INFO\"");
+            else
+                snprintf(cmd, sizeof(cmd), "RESPOND PREFIX=\"//\" MSG=\"Не удалось открыть файл печати для поиска SET_PRINT_STATS_INFO\"");
+            SEND_CMD(cmd);
+        }
+
         if (en==1)
             SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Starting print\"");
         else
             SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Запускаю печать\"");
         SEND_CMD("M24");
 
-        SEND_CMD("SDCARD_ENABLE_FFM ENABLE=1");
-        SEND_CMD("SDCARD_SET_CHANNEL CHANNEL=98");
+        SEND_CMD("_PREPARE_RESTORE");
     }
 #undef SEND_CMD
     return 0;

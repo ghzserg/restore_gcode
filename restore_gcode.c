@@ -520,13 +520,15 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
             SEND_CMD(cmd);
         }
 
+        SEND_CMD("_PREPARE_RESTORE");
+
         if (en==1)
             SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Starting print\"");
         else
             SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Запускаю печать\"");
         SEND_CMD("M24");
 
-        SEND_CMD("_PREPARE_RESTORE");
+        SEND_CMD("_AFTER_RESTORE");
     }
 #undef SEND_CMD
     return 0;

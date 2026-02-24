@@ -446,6 +446,7 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
         }
 
         SEND_CMD("_TEST_MIN_MAX");
+        SEND_CMD("_PREPARE_RESTORE");
 
         cJSON *x_pos = cJSON_GetArrayItem(position, 0);
         cJSON *y_pos = cJSON_GetArrayItem(position, 1);
@@ -481,7 +482,7 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
         else
             SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Включаю IFS\"");
 
-        SEND_CMD("_PREPARE_RESTORE");
+
         SEND_CMD("ZCONTROL_ABORT");
         SEND_CMD("ZCONTROL_ON");
 
@@ -520,8 +521,6 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
                 snprintf(cmd, sizeof(cmd), "RESPOND PREFIX=\"//\" MSG=\"Не удалось открыть файл печати для поиска SET_PRINT_STATS_INFO\"");
             SEND_CMD(cmd);
         }
-
-        SEND_CMD("_PREPARE_RESTORE");
 
         if (en==1)
             SEND_CMD("RESPOND PREFIX=\"//\" MSG=\"Starting print\"");

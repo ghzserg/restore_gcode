@@ -445,6 +445,8 @@ int generate_gcode(cJSON *root, int sockfd, const char *prefix) {
             SEND_CMD(cmd);
         }
 
+        SEND_CMD("_TEST_MIN_MAX");
+
         cJSON *x_pos = cJSON_GetArrayItem(position, 0);
         cJSON *y_pos = cJSON_GetArrayItem(position, 1);
         cJSON *z_pos = cJSON_GetArrayItem(position, 2);
